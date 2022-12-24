@@ -1,0 +1,13 @@
+# virtual environment
+env
+
+# compressed file
+*.tar
+*.rar
+*.zip
+
+# pycache
+_pycache__
+
+# notebook
+.ipynb_checkpoints 
