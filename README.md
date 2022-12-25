@@ -4,8 +4,13 @@
 
 - `paddleocr` required upper python v3.7
 - `numpy` required version < 1.24.0 (==1.21.0)
-- install PaddleOCR, install on Windows polygon3 need [Microsoft Visual C++ 14 or greater](https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170)
-- add `__init__.py` to modeling directory for declare it as python module
+
+Remove python ubuntu:
+
+    sudo add-apt-repository --remove ppa:fkrull/deadsnakes
+    sudo apt-get update
+    sudo apt-get remove --purge python3.6
+    sudo apt-get purge --auto-remove python3.6
 
 # references
 
