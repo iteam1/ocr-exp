@@ -11,3 +11,6 @@ _pycache__
 
 # notebook
 .ipynb_checkpoints 
+
+#PaddleOCR
+PaddleOCR
