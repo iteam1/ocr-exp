@@ -4,6 +4,7 @@
 
 - `paddleocr` required upper python v3.7
 - `numpy` required version < 1.24.0 (==1.21.0)
+- uninstall all python packages `pip freeze | xargs pip uninstall -y`
 
 
 # references
