@@ -2,9 +2,9 @@
 env
 
 # compressed file
-*.tar
-*.rar
-*.zip
+# *.tar
+# *.rar
+# *.zip
 
 # pycache
 _pycache__
