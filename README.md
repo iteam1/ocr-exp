@@ -24,6 +24,8 @@
 
 - matplotlib `pip install matplotlib`
 
+-circle_fit `pip install circle-fit`
+
 # references
 
 [paddleocr](https://pypi.org/project/paddleocr/)
