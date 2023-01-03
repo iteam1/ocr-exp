@@ -28,6 +28,8 @@
 
 # references
 
+[model_list_en](https://github.com/PaddlePaddle/PaddleOCR/blob/release/2.6/doc/doc_en/models_list_en.md)
+
 [paddleocr](https://pypi.org/project/paddleocr/)
 
 [paddleOCR](https://github.com/PaddlePaddle/PaddleOCR)
