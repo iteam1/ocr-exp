@@ -1,1 +1,0 @@
-#for inform  python module
