@@ -20,7 +20,7 @@ import collections
 from PIL import Image
 from openvino.runtime import Core
 import copy
-import pre.pre_post_processing as processing
+import pre_post_processing as processing
 
 # DETECTOR and REPORTER utils
 
