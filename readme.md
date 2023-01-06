@@ -1,0 +1,1 @@
+[color-sample](https://www.bestbuy.com/site/google-nest-audio-smart-speaker-chalk/6428305.p?skuId=6428305#anchor=productVariations)

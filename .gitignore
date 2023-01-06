@@ -2,12 +2,12 @@
 env
 
 # compressed file
-# *.tar
-# *.rar
-# *.zip
+*.tar
+*.rar
+*.zip
 
 # pycache
-_pycache__
+__pycache__
 
 # notebook
 .ipynb_checkpoints 
@@ -16,4 +16,4 @@ _pycache__
 PaddleOCR
 
 # GG Nest Audio samples
-ggna
+gg
