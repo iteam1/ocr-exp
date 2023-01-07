@@ -1,14 +1,4 @@
-accuracy: 0.91 (107/118)
-threshold: min= 0.01 max=0.71 mean=0.5829661016949154
+label: sage
+accuracy: 1.0 (117/117)
+threshold: min= 0.62 max=0.91 mean=0.7258974358974358
 false predictions:
-gg/sky/sky_109.jpg pred: sage thresh: 0.02
-gg/sky/sky_111.jpg pred: sage thresh: 0.02
-gg/sky/sky_80.jpg pred: sage thresh: 0.07
-gg/sky/sky_71.jpg pred: sage thresh: 0.01
-gg/sky/sky_79.jpg pred: sage thresh: 0.01
-gg/sky/sky_72.jpg pred: sage thresh: 0.01
-gg/sky/sky_82.jpg pred: sage thresh: 0.02
-gg/sky/sky_10.jpg pred: sage thresh: 0.01
-gg/sky/sky_76.jpg pred: sage thresh: 0.01
-gg/sky/sky_51.jpg pred: sage thresh: 0.02
-gg/sky/sky_28.jpg pred: sage thresh: 0.02

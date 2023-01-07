@@ -1,5 +1,5 @@
 '''
-https://stackoverflow.com/questions/65157017/creating-a-mask-image-using-range-sliders-trackbars-with-opencv-and-python
+HSV color detector
 '''
 import cv2
 import numpy as np
@@ -37,7 +37,7 @@ def on_trackbar(val):
 path = "./gg"
 label = random.choice(os.listdir(path))
 img_name = random.choice(os.listdir(os.path.join(path,label)))
-img = cv2.imread("gg/charcoal/charcoal_4.jpg") #os.path.join(path,label,img_name
+img = cv2.imread("table.jpg") #os.path.join(path,label,img_name
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 #create trackbar

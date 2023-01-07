@@ -15,15 +15,15 @@ thickness = 2 # Line thickness of 2 px
 class Classifier:
     def __init__(self):
         # chalk HSV
-        self.chalk = [(np.array([10,0,210]),np.array([21,22,255]))]
+        self.chalk = [(np.array([2,0,127]),np.array([52,59,247]))]
         # charcoal HSV
-        self.charcoal = [(np.array([107,126,134]),np.array([115,179,255]))]
+        self.charcoal = [(np.array([31,120,161]),np.array([124,173,255]))]
         # sage HSV
-        self.sage = [(np.array([69,0,0]),np.array([79,71,255]))]
+        self.sage = [(np.array([32,15,0]),np.array([78,94,255]))]
         # sand HSV
-        self.sand = [(np.array([0,40,170]),np.array([15,109,255]))]
+        self.sand = [(np.array([0,56,180]),np.array([90,105,255]))]
         # sky HSV
-        self.sky = [(np.array([92,42,32]),np.array([100,244,213]))]
+        self.sky = [(np.array([83,0,0]),np.array([106,101,255]))]
 
         # HSV ranges
         self.HSV = [self.chalk,self.charcoal,self.sage,self.sand,self.sky]
