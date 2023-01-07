@@ -38,7 +38,7 @@ if __name__ == "__main__":
         if pred != label:
             count +=1
             f_preds.append(os.path.join(args.dir,sample))
-            content += os.path.join(args.dir,sample) + " pred: " + pred + "\n"
+            content += os.path.join(args.dir,sample) + " pred: " + pred + " thresh: " + str(round(thresh,2)) +"\n"
 
     # threshold
     min_thresh = np.min(thresholds)
