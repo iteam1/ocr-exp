@@ -35,9 +35,9 @@ def on_trackbar(val):
 
 # random read image
 path = "./gg"
-label = "sky" #random.choice(os.listdir(path))
-img_name = "sky_27.jpg" #random.choice(os.listdir(os.path.join(path,label)))
-img = cv2.imread("snippets/colors.jpg") #os.path.join(path,label,img_name
+label = random.choice(os.listdir(path))
+img_name = random.choice(os.listdir(os.path.join(path,label)))
+img = cv2.imread("gg/charcoal/charcoal_4.jpg") #os.path.join(path,label,img_name
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 #create trackbar
