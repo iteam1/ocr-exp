@@ -23,21 +23,21 @@ def on_trackbar(val):
     upper = np.array([hue_max, sat_max, val_max])
 
     mask = cv2.inRange(hsv, lower, upper)
-    
+
     res = cv2.bitwise_and(img,img,mask=mask)
-    
+
     h,w,c = res.shape
     h = int(h*scale/100)
     w = int(w*scale/100)
     resized = cv2.resize(res,(0,0),fx=scale/100,fy=scale/100)
-    
+
     cv2.imshow(img_name,resized)
 
 # random read image
 path = "./gg"
 label = "sky" #random.choice(os.listdir(path))
 img_name = "sky_27.jpg" #random.choice(os.listdir(os.path.join(path,label)))
-img = cv2.imread(os.path.join(path,label,img_name)) #colors.jpg
+img = cv2.imread("snippets/colors.jpg") #os.path.join(path,label,img_name
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 #create trackbar
