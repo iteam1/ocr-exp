@@ -17,3 +17,8 @@ PaddleOCR
 
 # GG Nest Audio samples
 gg
+
+# color classifier
+test
+train
+*.h5

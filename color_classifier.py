@@ -67,7 +67,7 @@ def random_read(path):
         image_name: name of the image
     '''
     # choice label
-    label = "sage"#random.choice(os.listdir(path))
+    label = random.choice(os.listdir(path))
     # choice image of label
     image_name = random.choice(os.listdir(os.path.join(path,label)))
     return os.path.join(path,label,image_name)
