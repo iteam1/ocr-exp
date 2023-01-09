@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from circle_fit import taubinSVD
 from openvino.runtime import Core,Dimension
 from pre_post_processing import *
+from sklearn.metrics import accuracy_score
 
 # parameters
 PADDING=60
@@ -622,3 +623,92 @@ class Extractor:
         
         
         return rec_res,draw_img
+        
+
+class Classifier:
+    def __init__(self):
+    	# aka ColorClassifierGGNestAudio
+        self.loaded_model = None
+        self.IMG_SIZE = 100 #image input dimension
+        self.dict = {0:'sky',1:'charcoal',2:'sage',3:'chalk',4:'sand'} # dictionary mapping predict value to label
+        self.dict_invert = {'sky':0,'charcoal':1,'sage':2,'chalk':3,'sand':4}
+    def load_model(self,model_path):
+        '''
+        Load pretrained model (*.sav)
+        Args:
+            - model_path: path of pretrained model
+        Return:
+            Load model into class.loaded_model
+        '''
+        # load the model from disk
+        self.loaded_model = pickle.load(open(model_path, 'rb'))
+        print("Classifier loaded pretrain model!")
+
+    def predict(self,img):
+        '''
+        Predict new income data
+        Args:
+            - img(str or numpy.array): path or numpy array of image
+        Return:
+            - pred(str): predicted label or None
+        '''
+        pred = None
+        
+        # check model loaded
+        if not self.load_model:
+            print("No load pretrained model!")
+            return pred
+    
+        # check type of param img
+        typ = str(type(img))
+        if typ == "<class 'str'>":
+            img = cv2.imread(img)
+        elif typ == "<class 'numpy.ndarray'>":
+            pass
+        else:
+            print(f'{type(img)} is not supported!')
+            return pred
+        # preprocess income dat 
+        img = cv2.resize(img,(self.IMG_SIZE,self.IMG_SIZE)) # resize
+        img = img/255.0 # normalize
+        img = img.reshape(1,-1) # reshape(N,D)
+        # predict
+        y = self.loaded_model.predict(img) 
+        return self.dict[int(y)]
+    
+    def test(self,path):
+        '''
+        Test images,floder structure:
+            ./path
+                |_label1
+                |   |_img1.jpg
+                |   |_img2.png
+                |       ...
+                |_label2
+                |   |_img1.jpg
+                |   |_img2.png
+                        ...
+                    ...
+        Args:
+            - path: path to testing image floder
+        Return:
+            Print out metrics
+        '''
+        # check model loaded
+        if not self.load_model:
+            print("No load pretrained model!")
+            return
+        
+        preds = []
+        ground_truth = []
+        labels = os.listdir(path)
+        for label in labels:
+            imgs = os.listdir(os.path.join(path,label))
+            print("testing label: ",label)
+            for i in tqdm(imgs):
+                i = os.path.join(path,label,i)
+                preds.append(self.dict_invert[self.predict(i)]) # collect pred
+                ground_truth.append(self.dict_invert[label]) # collect ground truth
+        
+        # calc accuracy
+        print("Accuracy valid on "+ path+ ": ",accuracy_score(ground_truth,preds))
