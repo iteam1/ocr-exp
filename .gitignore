@@ -21,4 +21,7 @@ gg
 # color classifier
 test
 train
+
+# ml model
 *.h5
+*.sav
