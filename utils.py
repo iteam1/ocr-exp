@@ -7,10 +7,10 @@ import random
 import paddle
 import paddleocr
 import numpy as np
-import matplotlib.pyplot as plt
 from circle_fit import taubinSVD
-from openvino.runtime import Core,Dimension
+from pyzbar.pyzbar import decode
 from pre_post_processing import *
+from openvino.runtime import Core,Dimension
 from sklearn.metrics import accuracy_score
 
 def boost_contrast(img):
@@ -204,7 +204,6 @@ class ColorClassifier:
         self.loaded_model = None
         self.IMG_SIZE = 100 #image input dimension
         self.dict = {0:'sky',1:'charcoal',2:'sage',3:'chalk',4:'sand'} # dictionary mapping predict value to label
-        self.dict_invert = {'sky':0,'charcoal':1,'sage':2,'chalk':3,'sand':4}
 
     def load_model(self,model_path):
         '''
@@ -281,8 +280,9 @@ class ColorClassifier:
             print("testing label: ",label)
             for i in tqdm(imgs):
                 i = os.path.join(path,label,i)
-                preds.append(self.dict_invert[self.predict(i)]) # collect pred
-                ground_truth.append(self.dict_invert[label]) # collect ground truth
+                pred = self.predict(i)
+                preds.append(pred) # collect pred
+                ground_truth.append(label) # collect ground truth
 
         # calc accuracy
         print("Accuracy valid on "+ path+ ": ",accuracy_score(ground_truth,preds))
