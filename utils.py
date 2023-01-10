@@ -1,4 +1,5 @@
-import cv2import os
+import cv2
+import os
 import cv2
 import sys
 import copy
@@ -12,18 +13,14 @@ from openvino.runtime import Core,Dimension
 from pre_post_processing import *
 from sklearn.metrics import accuracy_score
 
-# parameters
-PADDING=60
-BOX_NUM=40
-OFFSET=30
-FLAGS=cv2.INTER_CUBIC + cv2.WARP_FILL_OUTLIERS + cv2.WARP_POLAR_LINEAR
-R_MAX=4000
-MIN_POINTS=200
-R_OFFSET=250
-Y_OFFSET=20
-SHRINK=50
-
 def boost_contrast(img):
+    '''
+    Boost constact of image
+    Args:
+        img(numpy array): input image
+    Return:
+        out: constact boosted image
+    '''
     lab= cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     l_channel, a, b = cv2.split(lab)
 
@@ -39,8 +36,15 @@ def boost_contrast(img):
     out = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
     return out
 
-#Preprocessing image functions for text detection and recognition
 def image_preprocess(input_image, size):
+    '''
+    Preprocessing image functions for text detection and recognition
+    Args:
+        input_image (numpy array): input image
+        size: size of image
+    Return:
+        preprocessed image
+    '''
     img = cv2.resize(input_image, (size,size))
     img = np.transpose(img, [2,0,1]) / 255
     img = np.expand_dims(img, 0)
@@ -51,29 +55,36 @@ def image_preprocess(input_image, size):
     img /= img_std
     return img.astype(np.float32)
 
-#Preprocess for Paddle Recognition
 def resize_norm_img(img, max_wh_ratio):
-        no=48
-        rec_image_shape = [3,no, 320] #[3, 32, 320]
-        imgC, imgH, imgW = rec_image_shape
-        assert imgC == img.shape[2]
-        character_type = "ch"
-        if character_type == "ch":
-            imgW = int((no * max_wh_ratio))
-        h, w = img.shape[:2]
-        ratio = w / float(h)
-        if math.ceil(imgH * ratio) > imgW:
-            resized_w = imgW
-        else:
-            resized_w = int(math.ceil(imgH * ratio))
-        resized_image = cv2.resize(img, (resized_w, imgH))
-        resized_image = resized_image.astype('float32')
-        resized_image = resized_image.transpose((2, 0, 1)) / 255
-        resized_image -= 0.5
-        resized_image /= 0.5
-        padding_im = np.zeros((imgC, imgH, imgW), dtype=np.float32)
-        padding_im[:, :, 0:resized_w] = resized_image
-        return padding_im
+    '''
+    Preprocess for Paddle Recognition
+    Args:
+        img: preprocessed image
+        max_wh_ratio: dimension ratio
+    Return:
+        resized normalized image
+    '''
+    no=48
+    rec_image_shape = [3,no, 320] #[3, 32, 320]
+    imgC, imgH, imgW = rec_image_shape
+    assert imgC == img.shape[2]
+    character_type = "ch"
+    if character_type == "ch":
+        imgW = int((no * max_wh_ratio))
+    h, w = img.shape[:2]
+    ratio = w / float(h)
+    if math.ceil(imgH * ratio) > imgW:
+        resized_w = imgW
+    else:
+        resized_w = int(math.ceil(imgH * ratio))
+    resized_image = cv2.resize(img, (resized_w, imgH))
+    resized_image = resized_image.astype('float32')
+    resized_image = resized_image.transpose((2, 0, 1)) / 255
+    resized_image -= 0.5
+    resized_image /= 0.5
+    padding_im = np.zeros((imgC, imgH, imgW), dtype=np.float32)
+    padding_im[:, :, 0:resized_w] = resized_image
+    return padding_im
     
 def rotateAndScale(img, scaleFactor = 0.5, degreesCCW = 30):
     '''
