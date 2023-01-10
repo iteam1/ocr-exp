@@ -155,140 +155,92 @@ def infer_circle(mask):
     xc,yc,r,sigma = taubinSVD(curve)
     return xc,yc,r,sigma
 
-class CodeReader:
+def warp_img(mask,roi):
+    '''
+    warp cropped image
+    Args:
+        mask: mask of cropped image
+        roi: cropped image
+    return:
+        out: warpped image
+        out_180: rotated 180 warpped image
+    '''
+    # avoid could not broadcast input array from shape (1539,2465,3) into shape (1539,86,3)
+    try:
+        padding = 20
 
-    def __init__(self):
-        pass
+        mask = cv2.cvtColor(mask,cv2.COLOR_BGR2GRAY)
+        h,w = mask.shape
 
-    def read(self):
-        '''
-        Read barcode or qrcode
-        '''
-        pass
+        curve = []
+        for i in range(w):
+            v_line = mask[:,i:i+1]
+            pos = cv2.findNonZero(v_line)
+            if pos is not None:
+                curve.append((pos[0][0][1],i))
 
-class ObjectClassifier:
+        xc, yc, r, sigma = taubinSVD(curve)
 
-    def __init__(self):
-        pass
+        if r < R_MAX and len(curve) > MIN_POINTS:
 
-    def load_model(self):
-        '''
-        Load pretrained model (*.sav)
-        Args:
-            - model_path: path of pretrained model
-        Return:
-            Load model into class.loaded_model
-        '''
-        pass
+            r = int(r) # can not convert inifity
 
-    def predict(self):
-        '''
-        Predict new income data
-        Args:
-            - img(str or numpy.array): path or numpy array of image
-        Return:
-            - pred(str): predicted label or None
-        '''
-        pass
+            if xc<0:
+                x = int(r - w/2)
+                y = 2*r-h
+                x2 = x+w
+                y2 = 2*r
+            else:
+                x = int(r - w/2)
+                y = 0
+                x2 = x+w
+                y2 = h
 
-    def test(self):
-        '''
-        Test image
-        '''
-        pass
+            blank = np.zeros((r*2,r*2,3))
+            blank = blank.astype(np.uint8)
+            blank[y:y2,x:x2]= roi
 
-class ColorClassifier:
+            polar_img = cv2.warpPolar(blank,(0,0),(r,r+Y_OFFSET),r+R_OFFSET,FLAGS)
+            out = polar_img.transpose(1,0,2)[::-1]
 
-    def __init__(self):
-    	# aka ColorClassifierGGNestAudio
-        self.loaded_model = None
-        self.IMG_SIZE = 100 #image input dimension
-        self.dict = {0:'sky',1:'charcoal',2:'sage',3:'chalk',4:'sand'} # dictionary mapping predict value to label
-        self.dict_invert = {'sky':0,'charcoal':1,'sage':2,'chalk':3,'sand':4}
+            gray = cv2.cvtColor(out, cv2.COLOR_BGR2GRAY)
+            ret, thresh = cv2.threshold(gray, 127, 255, 0)
+            contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    def load_model(self,model_path):
-        '''
-        Load pretrained model (*.sav)
-        Args:
-            - model_path: path of pretrained model
-        Return:
-            Load model into class.loaded_model
-        '''
-        # load the model from disk
-        self.loaded_model = pickle.load(open(model_path, 'rb'))
-        print("Classifier loaded pretrain model!")
+            areas = []
+            for cnt in contours:
+                area = cv2.contourArea(cnt)
+                areas.append(area)
 
-    def predict(self,img):
-        '''
-        Predict new income data
-        Args:
-            - img(str or numpy.array): path or numpy array of image
-        Return:
-            - pred(str): predicted label or None
-        '''
-        pred = None
+            cnt_max = contours[np.argmax(areas)]
+            xr,yr,w,h = cv2.boundingRect(cnt_max)
 
-        # check model loaded
-        if not self.load_model:
-            print("No load pretrained model!")
-            return pred
+            x0=xr-padding
+            y0=yr-padding
+            x1=xr+w+padding
+            y1=yr+h+padding
 
-        # check type of param img
-        typ = str(type(img))
-        if typ == "<class 'str'>":
-            img = cv2.imread(img)
-        elif typ == "<class 'numpy.ndarray'>":
-            pass
+            out = out[y0:y1,x0:x1]
         else:
-            print(f'{type(img)} is not supported!')
-            return pred
-        # preprocess income dat
-        img = cv2.resize(img,(self.IMG_SIZE,self.IMG_SIZE)) # resize
-        img = img/255.0 # normalize
-        img = img.reshape(1,-1) # reshape(N,D)
-        # predict
-        y = self.loaded_model.predict(img)
-        return self.dict[int(y)]
+            out = roi
 
-    def test(self,path):
-        '''
-        Test images,floder structure:
-            ./path
-                |_label1
-                |   |_img1.jpg
-                |   |_img2.png
-                |       ...
-                |_label2
-                |   |_img1.jpg
-                |   |_img2.png
-                        ...
-                    ...
-        Args:
-            - path: path to testing image floder
-        Return:
-            Print out metrics
-        '''
-        # check model loaded
-        if not self.load_model:
-            print("No load pretrained model!")
-            return
+        # check zero-dim after warp
+        h,w,c = out.shape
+        if h*w*c==0:
+            out=roi
 
-        preds = []
-        ground_truth = []
-        labels = os.listdir(path)
-        for label in labels:
-            imgs = os.listdir(os.path.join(path,label))
-            print("testing label: ",label)
-            for i in tqdm(imgs):
-                i = os.path.join(path,label,i)
-                preds.append(self.dict_invert[self.predict(i)]) # collect pred
-                ground_truth.append(self.dict_invert[label]) # collect ground truth
+    except Exception as e:
+        print(e)
+        out = roi
 
-        # calc accuracy
-        print("Accuracy valid on "+ path+ ": ",accuracy_score(ground_truth,preds))
+    # revert image
+    #out = cv2.bitwise_not(out)
+    # rotate image
+    out_180 = cv2.rotate(out,cv2.ROTATE_180)
+
+    return out,out_180
 
 class Extractor:
-
     def __init__(self):
         self.res=1280 # the resolution range 1280,2560,5120,... TB warnning
         self.det_compiled_model = None
@@ -307,7 +259,8 @@ class Extractor:
         self.Y_OFFSET=20
         self.SHRINK = 50
 
-    def load_model(self,det_model_dir="ppocr/ch_PP-OCRv3_det_infer",rec_model_dir="ppocr/ch_PP-OCRv3_rec_infer"):
+    def load_model(self,det_model_dir="paddle_ocr/ch_PP-OCRv3_det_infer",
+                   rec_model_dir = "paddle_ocr/ch_PP-OCRv3_rec_infer"):
         '''
         Load detection and recognition model
         Args:
@@ -421,13 +374,139 @@ class Extractor:
         dt_boxes = sorted_boxes(dt_boxes)
         return dt_boxes,mask
 
+    def crop(self,image_file,test_image):
+        '''
+        Extract copped roi
+        Args:
+            image_file:
+            test_image:
+        Return:
+            img_crop_list: list of preprocessed image
+        '''
+        rois = []
+        masks = []
+        regs =[] # maximum rec
+        boxs = [] # minimum rec 4-point
+        rects = [] # minimum rec
+        slopes = [] # degree
+        img_crop_list = []
+
+        dt_boxes,mask = self.detect(image_file,test_image)
+        image = cv2.resize(image_file,(self.res,self.res))
+
+        # find contours
+        contours, hierarchy = cv2.findContours(mask.astype("uint8"),cv2.RETR_TREE,
+                                               cv2.CHAIN_APPROX_SIMPLE)
+
+        # select suitable area
+        areas = []
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            areas.append(area)
+
+        # select suitable area
+        cnts = []
+        s_min = np.array(areas).mean()
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            if area > s_min:
+                cnts.append(cnt)
+
+        merged = cv2.merge([mask.astype("uint8"),mask.astype("uint8"),mask.astype("uint8")]) *255
+        draw_img = merged.copy()
+
+        for i,cnt in enumerate(cnts):
+            # maximum rect
+            x_m,y_m,w_m,h_m = cv2.boundingRect(cnt)
+            regs.append((x_m,y_m,w_m,h_m))
+
+            # roated rect (minimum rect)
+            rect = cv2.minAreaRect(cnt)
+
+            # angles of minrect
+            slope = rect[-1]
+            slopes.append(slope)
+
+            # new rect add padding
+            h = int(rect[1][0]+ self.PADDING)
+            w = int(rect[1][1]+ self.PADDING)
+            new_rect = (rect[0],(h,w),slope) #h,w
+            rects.append(new_rect)
+            box = cv2.boxPoints(new_rect)
+            box = np.int0(box)
+            boxs.append(box)
+
+        if len(boxs) < self.BOX_NUM:
+            for i,t in enumerate(slopes):
+                # original input
+                img = image.copy()
+                img_mask = merged.copy()
+                rect = rects[i]
+                box = boxs[i] # 4 pts form of rect
+                rebox = box.reshape(-1,1,2)
+                #rotate
+                img,M = rotateAndScale(img, scaleFactor = 2.0, degreesCCW = t)
+                img_mask,_ = rotateAndScale(img_mask, scaleFactor = 2.0, degreesCCW = t)
+                rebox = cv2.transform(rebox, M) # what you need
+                # find new top left,bottom right
+                dist = []
+                for pt in rebox.reshape(-1,2):
+                    d = calc_dist(np.array([0,0]),pt)
+                    dist.append(d)
+                top_left = rebox.reshape(-1,2)[np.argmin(dist)]
+                bottom_right = rebox.reshape(-1,2)[np.argmax(dist)]
+                w,h = bottom_right - top_left
+                x,y = top_left
+                # roi of original and mask
+                out = img[y:y+h,x:x+w]
+                # zero dim
+                if(out.shape[0]*out.shape[1]==0):
+                    continue
+                out_m = img_mask[y:y+h,x:x+w]
+                rois.append(out)
+                masks.append(out_m)
+
+        else:
+            for i,_ in enumerate(boxs):
+                # original input
+                img = image.copy()
+                img_mask = merged.copy()
+                # read rec
+                x,y,w,h = regs[i]
+                x = x - self.PADDING if x - self.PADDING > 0 else 0
+                y = y - self.PADDING if y - self.PADDING > 0 else 0
+                # roi of original and mask
+                out = img[y:y+h+self.PADDING,x:x+w+self.PADDING]
+                # zero dim
+                if(out.shape[0]*out.shape[1]==0):
+                    continue
+                out_m = img_mask[y:y+h,x:x+w]
+                rois.append(boost_contrast(out))
+                masks.append(out_m)
+
+        # rotate
+        if len(rois) >0:
+            for i,roi in enumerate(rois):
+                h,w,c = roi.shape
+                if h > w:
+                    rois[i] = cv2.rotate(rois[i],cv2.ROTATE_90_CLOCKWISE)
+                    masks[i] = cv2.rotate(masks[i],cv2.ROTATE_90_CLOCKWISE)
+        else:
+            pass
+
+        # warp cropped image
+        for i in range(len(rois)):
+            out,out_180 = warp_img(masks[i],rois[i])
+            img_crop_list.append(out)
+            img_crop_list.append(out_180)
+
+        return img_crop_list
+
+    def recognize_img(self):
+        pass
+
     def recognize(self,img_crop_list):
         '''
-        Recognize text in list of cropped image
-        Args:
-            img_crop_list: list of cropped roi
-        Return:
-            rec_res: list of text recognized and conffident score
         '''
         #Recognition starts from here
         img_num = len(img_crop_list)
@@ -555,3 +634,91 @@ class Extractor:
 
 
         return rec_res,draw_img
+
+class Classifier:
+    def __init__(self):
+    	# aka ColorClassifierGGNestAudio
+        self.loaded_model = None
+        self.IMG_SIZE = 100 #image input dimension
+        self.dict = {0:'sky',1:'charcoal',2:'sage',3:'chalk',4:'sand'} # dictionary mapping predict value to label
+        self.dict_invert = {'sky':0,'charcoal':1,'sage':2,'chalk':3,'sand':4}
+    def load_model(self,model_path):
+        '''
+        Load pretrained model (*.sav)
+        Args:
+            - model_path: path of pretrained model
+        Return:
+            Load model into class.loaded_model
+        '''
+        # load the model from disk
+        self.loaded_model = pickle.load(open(model_path, 'rb'))
+        print("Classifier loaded pretrain model!")
+
+    def predict(self,img):
+        '''
+        Predict new income data
+        Args:
+            - img(str or numpy.array): path or numpy array of image
+        Return:
+            - pred(str): predicted label or None
+        '''
+        pred = None
+
+        # check model loaded
+        if not self.load_model:
+            print("No load pretrained model!")
+            return pred
+
+        # check type of param img
+        typ = str(type(img))
+        if typ == "<class 'str'>":
+            img = cv2.imread(img)
+        elif typ == "<class 'numpy.ndarray'>":
+            pass
+        else:
+            print(f'{type(img)} is not supported!')
+            return pred
+        # preprocess income dat
+        img = cv2.resize(img,(self.IMG_SIZE,self.IMG_SIZE)) # resize
+        img = img/255.0 # normalize
+        img = img.reshape(1,-1) # reshape(N,D)
+        # predict
+        y = self.loaded_model.predict(img)
+        return self.dict[int(y)]
+
+    def test(self,path):
+        '''
+        Test images,floder structure:
+            ./path
+                |_label1
+                |   |_img1.jpg
+                |   |_img2.png
+                |       ...
+                |_label2
+                |   |_img1.jpg
+                |   |_img2.png
+                        ...
+                    ...
+        Args:
+            - path: path to testing image floder
+        Return:
+            Print out metrics
+        '''
+        # check model loaded
+        if not self.load_model:
+            print("No load pretrained model!")
+            return
+
+        preds = []
+        ground_truth = []
+        labels = os.listdir(path)
+        for label in labels:
+            imgs = os.listdir(os.path.join(path,label))
+            print("testing label: ",label)
+            for i in tqdm(imgs):
+                i = os.path.join(path,label,i)
+                preds.append(self.dict_invert[self.predict(i)]) # collect pred
+                ground_truth.append(self.dict_invert[label]) # collect ground truth
+
+        # calc accuracy
+        print("Accuracy valid on "+ path+ ": ",accuracy_score(ground_truth,preds))
