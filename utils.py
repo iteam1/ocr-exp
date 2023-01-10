@@ -624,7 +624,6 @@ class Extractor:
         
         return rec_res,draw_img
         
-
 class Classifier:
     def __init__(self):
     	# aka ColorClassifierGGNestAudio
