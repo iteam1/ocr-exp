@@ -1,4 +1,35 @@
-label: sage
-accuracy: 1.0 (117/117)
-threshold: min= 0.62 max=0.91 mean=0.7258974358974358
-false predictions:
+TEST COLOR REPORT
+-------
+img: gg/sky/sky_17.jpg label: sky pred: chalk
+img: gg/sky/sky_71.jpg label: sky pred: chalk
+img: gg/sky/sky_76.jpg label: sky pred: chalk
+img: gg/sky/sky_111.jpg label: sky pred: chalk
+img: gg/sky/sky_79.jpg label: sky pred: chalk
+img: gg/sky/sky_51.jpg label: sky pred: chalk
+img: gg/sky/sky_102.jpg label: sky pred: chalk
+img: gg/sky/sky_80.jpg label: sky pred: chalk
+img: gg/sky/sky_109.jpg label: sky pred: chalk
+img: gg/sky/sky_10.jpg label: sky pred: chalk
+img: gg/sky/sky_28.jpg label: sky pred: chalk
+img: gg/sky/sky_52.jpg label: sky pred: chalk
+img: gg/sky/sky_72.jpg label: sky pred: chalk
+img: gg/sky/sky_42.jpg label: sky pred: chalk
+img: gg/sky/sky_82.jpg label: sky pred: chalk
+img: gg/sky/sky_101.jpg label: sky pred: chalk
+img: gg/sage/sage_24.jpg label: sage pred: chalk
+img: gg/sage/sage_8.jpg label: sage pred: chalk
+img: gg/sage/sage_10.jpg label: sage pred: chalk
+img: gg/sage/sage_26.jpg label: sage pred: chalk
+img: gg/sage/sage_72.jpg label: sage pred: chalk
+img: gg/sage/sage_57.jpg label: sage pred: chalk
+img: gg/sage/sage_52.jpg label: sage pred: chalk
+img: gg/sage/sage_41.jpg label: sage pred: chalk
+img: gg/sage/sage_15.jpg label: sage pred: chalk
+img: gg/sage/sage_39.jpg label: sage pred: chalk
+img: gg/sage/sage_106.jpg label: sage pred: chalk
+img: gg/sage/sage_113.jpg label: sage pred: chalk
+img: gg/sage/sage_63.jpg label: sage pred: chalk
+img: gg/sage/sage_60.jpg label: sage pred: chalk
+img: gg/sage/sage_21.jpg label: sage pred: chalk
+img: gg/sage/sage_115.jpg label: sage pred: chalk
+img: gg/sage/sage_9.jpg label: sage pred: chalk

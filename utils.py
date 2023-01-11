@@ -4,9 +4,11 @@ import cv2
 import sys
 import copy
 import random
+import pickle
 import paddle
 import paddleocr
 import numpy as np
+from tqdm import tqdm
 from circle_fit import taubinSVD
 from pyzbar.pyzbar import decode
 from pre_post_processing import *
@@ -300,6 +302,7 @@ class ColorClassifier:
         Return:
             Print out metrics
         '''
+        content = "TEST COLOR REPORT\n-------\n"
         # check model loaded
         if not self.load_model:
             print("No load pretrained model!")
@@ -316,7 +319,13 @@ class ColorClassifier:
                 pred = self.predict(i)
                 preds.append(pred) # collect pred
                 ground_truth.append(label) # collect ground truth
+                if pred != label:
+                    content+= "img: " + i + " label: " + label + " pred: " + pred + "\n" 
 
+        # export report
+        with open('report.txt','w') as f:
+            f.write(content)
+            
         # calc accuracy
         print("Accuracy valid on "+ path+ ": ",accuracy_score(ground_truth,preds))
 
