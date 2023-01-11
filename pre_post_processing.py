@@ -12,7 +12,7 @@ import pyclipper
 import string
 from paddle.nn import functional as F
 
-dir = "paddle_ocr/data"
+dir = "ppocr/data"
 
 def DetResizeForTest(data):
     img = data['image']
