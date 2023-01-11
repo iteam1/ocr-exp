@@ -160,11 +160,44 @@ class CodeReader:
     def __init__(self):
         pass
 
-    def read(self):
+    def read_code(self,img):
         '''
         Read barcode or qrcode
+        Args:
+            img: input image
+        Return:
+            d_list: list of decoded [(left,top,width,height),...]
         '''
-        pass
+        d_list = decode(img)
+        return d_list
+    
+    def draw_code(self,img,d_list):
+        '''
+        Draw barcode or qrcode
+        Args:
+            img (numpy array): input image
+            d_list (list) : list of decoded [(left,top,width,height),...]
+        Return:
+            img (numpy array): output image 
+        '''
+        for i,d in enumerate(d_list):
+            img = cv2.rectangle(img,(d.rect.left,d.rect.top),(d.rect.left+d.rect.width,d.rect.top+d.rect.height),(225,0,0),2)
+            img = cv2.polylines(img,[np.array(d.polygon)],True,(0,255,0),2)
+            img = cv2.putText(img,str(i+1)+ "_" + d.data.decode(),(d.rect.left,d.rect.top),cv2.FONT_HERSHEY_SIMPLEX,0.6,(0,0,255),1,cv2.LINE_AA)
+        return img
+    
+    def infer(self,img):
+        '''
+        Infer model and serial number of the image (if exist)
+        Args:
+            img (numpy array): input image
+        Return:
+            model: model number
+            serial: model number
+        '''
+        d_list = decode(img)
+        print(d_list)
+        return d_list
 
 class ObjectClassifier:
 
