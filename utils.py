@@ -170,7 +170,18 @@ class CodeReader:
         Return:
             d_list: list of decoded [(left,top,width,height),...]
         '''
-        d_list = decode(img)
+        img_org = img.copy()
+        # menthod1
+        img = img_org.copy()
+        img = cv2.GaussianBlur(img,(5,5),0)
+        d_1 = decode(img)
+        # menthod2
+        img = img_org.copy()
+        img = cv2.GaussianBlur(img,(5,5),0)
+        img = boost_contrast(img)
+        d_2 = decode(img)
+        #combine
+        d_list = d_1 + d_2
         return d_list
     
     def draw_code(self,img,d_list):
@@ -188,18 +199,73 @@ class CodeReader:
             img = cv2.putText(img,str(i+1)+ "_" + d.data.decode(),(d.rect.left,d.rect.top),cv2.FONT_HERSHEY_SIMPLEX,0.6,(0,0,255),1,cv2.LINE_AA)
         return img
     
-    def infer(self,img):
+    def infer(self,img,aliases):
         '''
         Infer model and serial number of the image (if exist)
         Args:
             img (numpy array): input image
+            aliases (dict): dictionary of device alias
         Return:
             model: model number
             serial: model number
         '''
-        d_list = decode(img)
-        print(d_list)
-        return d_list
+        d_list = self.read_code(img)
+        
+        s = []
+        a = []
+
+        for de in d_list:
+            t = de.type
+            data = de.data.decode()
+            if t == "QRCODE":
+                if data[0]=="1":
+                    data = data.split('$')
+                else:
+                    data = data.split(',')
+                for d in data:
+                    if d[:2]=="S:":
+                        s.append(d[2:])
+                    elif d[:2]=="I:":
+                        if d[2:] in aliases.keys():
+                            a.append(aliases[d[2:]])
+                        else:
+                            a.append(d[2:])
+                    elif d[:2]=="C:":
+                        if d[2:] in aliases.keys():
+                            a.append(aliases[d[2:]])
+                        else:
+                            a.append(d[2:])
+            elif t == "CODE128":
+                if (len(data)==14 or len(data)==16) and all(c.isalnum() for c in data):
+                    s.append(data)
+                elif data[:3]=="SN:":
+                    s.append(data[3:])
+            else:
+                continue
+            
+        # find serial by the most frequent
+        serial = None
+        if len(s) != 0:
+            count = 0
+            serial = s[0]
+            for i in s:
+                f = s.count(i)
+                if f > count:
+                    count = f
+                    serial = i
+                    
+        # find model by the most frequent
+        model = None
+        if len(a) != 0:
+            count = 0
+            model = a[0]
+            for i in a:
+                f = a.count(i)
+                if f > count:
+                    count = f
+                    model = i
+                    
+        return model,serial
 
 class ObjectClassifier:
 
