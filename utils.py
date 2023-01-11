@@ -270,9 +270,10 @@ class CodeReader:
 class ObjectClassifier:
 
     def __init__(self):
-        pass
+        self.loaded_model = None
+        self.IMG_SIZE = 100 #image input dimension
 
-    def load_model(self):
+    def load_model(self,model_path):
         '''
         Load pretrained model (*.sav)
         Args:
@@ -280,23 +281,94 @@ class ObjectClassifier:
         Return:
             Load model into class.loaded_model
         '''
-        pass
+        # load the model from disk
+        self.loaded_model = pickle.load(open(model_path, 'rb'))
+        print("Classifier loaded pretrain model!")
+        
 
-    def predict(self):
+    def predict(self,img,dicts):
         '''
         Predict new income data
         Args:
             - img(str or numpy.array): path or numpy array of image
+            - dicts (dict): dictionary of label-model
         Return:
             - pred(str): predicted label or None
         '''
-        pass
+        pred = None
 
-    def test(self):
+        # check model loaded
+        if not self.load_model:
+            print("No load pretrained model!")
+            return pred
+
+        # check type of param img
+        typ = str(type(img))
+        if typ == "<class 'str'>":
+            img = cv2.imread(img,0)
+        elif typ == "<class 'numpy.ndarray'>":
+            pass
+        else:
+            print(f'{type(img)} is not supported!')
+            return pred
+        
+        # preprocess income data
+        img = cv2.resize(img,(self.IMG_SIZE,self.IMG_SIZE))
+        img = img/255.0
+        img = img.reshape(1,-1)
+        # predict
+        pred = self.loaded_model.predict(img)
+        pred = int(pred)
+        # get model of prediction
+        model = dicts[str(pred)]
+        
+        return model['model']
+        
+    def test(self,path):
         '''
-        Test image
+        Test images,floder structure:
+            ./path
+                |_1
+                |   |_img1.jpg
+                |   |_img2.png
+                |       ...
+                |_2
+                |   |_img1.jpg
+                |   |_img2.png
+                        ...
+                    ...
+        Args:
+            - path: path to testing image floder
+        Return:
+            Print out metrics
+            Export report.txt file
         '''
-        pass
+        content = "TEST OBJECT CLASSIFIER REPORT\n-------\n"
+        preds = []
+        ground_truth = []
+        labels = os.listdir(path)
+        for l in range(labels):
+            imgs = os.listdir(os.path.join(path,label))
+            print("testing label: ",label)
+            for i in tqdm(imgs):
+                i = os.path.join(path,label,i)
+                img = cv2.imread(i,0)
+                img = cv2.resize(img,(self.IMG_SIZE,self.IMG_SIZE))
+                img = img/255.0
+                img = img.reshape(1,-1)
+                pred = int(self.loaded_model.predict(img))
+                preds.append(pred) # collect pred
+                ground_truth.append(int(label)) # collect ground truth
+                # note wrong prediction
+                if pred != label:
+                    content+= "img: " + i + " label: " + label + " pred: " + pred + "\n"
+        
+        # export report
+        with open('report.txt','w') as f:
+            f.write(content)
+                    
+        # calc accuracy
+        print("Accuracy valid on ",accuracy_score(ground_truth,preds))
 
 class ColorClassifier:
 
@@ -342,7 +414,7 @@ class ColorClassifier:
         else:
             print(f'{type(img)} is not supported!')
             return pred
-        # preprocess income dat
+        # preprocess income data
         img = cv2.resize(img,(self.IMG_SIZE,self.IMG_SIZE)) # resize
         img = img/255.0 # normalize
         img = img.reshape(1,-1) # reshape(N,D)
@@ -367,8 +439,10 @@ class ColorClassifier:
             - path: path to testing image floder
         Return:
             Print out metrics
+            Export report.txt file
         '''
         content = "TEST COLOR REPORT\n-------\n"
+        
         # check model loaded
         if not self.load_model:
             print("No load pretrained model!")
