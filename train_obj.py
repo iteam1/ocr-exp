@@ -162,6 +162,8 @@ print("X_val: ",X_val.shape)
 print("y_train: ",y_train.shape)
 print("y_val: ",y_val.shape)
 
+print('traing...')
+
 svc = SVC(kernel='linear',gamma='auto')
 svc.fit(X_train, y_train)
 
