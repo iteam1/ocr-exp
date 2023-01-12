@@ -14,6 +14,8 @@ from pyzbar.pyzbar import decode
 from pre_post_processing import *
 from openvino.runtime import Core,Dimension
 from sklearn.metrics import accuracy_score
+from paddleocr import PaddleOCR
+from refer import OCR
 
 def boost_contrast(img):
     '''
@@ -469,6 +471,84 @@ class ColorClassifier:
         # calc accuracy
         print("Accuracy valid on "+ path+ ": ",accuracy_score(ground_truth,preds))
 
+class GGHomeMini:
+    def __init__(self):
+        # for recognition
+        self.ppocr = PaddleOCR(det_model_dir='ppocr/ch_PP-OCRv3_det_infer',
+                rec_model_dir='ppocr/ch_PP-OCRv3_rec_infer',
+                cls_model_dir='ppocr/ch_ppocr_mobile_v2.0_cls_infer', 
+                use_angle_cls=True)
+        
+        # for detection
+        self.ocr = OCR()
+        self.ocr.load_model()
+        
+        self.K = 41
+        
+    def extract(self,img):
+        '''
+        Extract ocr from specific device Google Home Mini
+        '''
+        mask = self.ocr.get_mask(img)
+        #dilate
+        kernel = np.ones((self.K,self.K),np.uint8)
+        dilate = cv2.dilate(mask.astype('uint8')*255,kernel,iterations=1)
+        img = cv2.resize(img,(mask.shape[1],mask.shape[0]))
+        
+        # find best curve
+        w,h = dilate.shape
+        h_lines = []
+        c = []
+        for i in range(h):
+            h_line = dilate[i:i+1,:]
+            pos = cv2.findNonZero(h_line) #x,y
+            if pos is not None:
+                c.append((pos[0][0][0],i))
+            h_lines.append(h_line)           
+            
+        C= []
+        c_sub = []
+        p0 = c[0]
+        DMAX = 100
+        for i in range(len(c)):
+            p = c[i]
+            c_sub.append(p)
+            d = cv2.norm(np.array(p),np.array(p0))
+            if d > DMAX:
+                C.append(c_sub)
+                c_sub = []
+                print(p0)
+            p0 = p
+            
+        C.append(c_sub)
+        
+        L = [len(i) for i in C]
+        
+        c_sub = C[np.argmax(L)] # the best curve
+        
+        # fit in circle
+        xc, yc, r, sigma = taubinSVD(c_sub)
+        r = int(r) +50
+        
+        flags = cv2.INTER_CUBIC + cv2.WARP_FILL_OUTLIERS + cv2.WARP_POLAR_LINEAR
+        polar_img = cv2.warpPolar(img,(0,0),(int(xc),int(yc)),r,flags)
+        polar_img = polar_img.transpose(1,0,2)[::-1]
+        
+        rec_res = self.ppocr.ocr(polar_img,det=True,rec=True,cls=True)
+
+        return rec_res
+    
+    def infer(self,rec_res):
+        '''
+        Infer serial & model number in ocr's result
+        Args:
+            rec_res: result of ocr
+        Return:
+            serial: serial number
+            model: model number
+        '''
+        pass
+    
 class Extractor:
 
     def __init__(self):
@@ -657,7 +737,7 @@ class Extractor:
                 rec_res[indices[beg_img_no + rno]] = rec_result[rno]
         return rec_res
 
-    def infer(self,img_path):
+    def extract(self,img_path):
         '''
         Inference text detection and tex recognition
         Args:
@@ -735,5 +815,16 @@ class Extractor:
                     # remove pred samller than drop_score
                     draw_img = draw_ocr_box_txt(img,boxes,txts,scores,drop_score=0.2)
 
-
         return rec_res,draw_img
+    
+
+    def infer(self,rec_res):
+        '''
+        Infer serial & model number in ocr's result
+        Args:
+            res: result of ocr
+        Return:
+            serial: serial number
+            model: model number
+        '''
+        pass
