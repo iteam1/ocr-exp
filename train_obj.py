@@ -18,7 +18,8 @@ ia.seed(1)
 
 path = "samples"
 labels = os.listdir(path)
-print(labels)
+
+print('labels:\n',labels)
 
 features = []
 for l in labels:
@@ -30,13 +31,13 @@ n = 1
 for f in list(set(features)):
     n *=f
     
-print(features)
+print('features:\n',features)
 print('n= ',n)
 
 ms = []
 for f in features:
     ms.append(int(n/f))
-print(ms)
+print('ms:\n',ms)
 
 seq = iaa.Sequential([
     iaa.Fliplr(0.5), # horizontal flips
