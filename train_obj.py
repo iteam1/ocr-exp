@@ -70,7 +70,7 @@ seq = iaa.Sequential([
 ], random_order=True) # apply augmenters in random order
 
 DIM=227
-N = 100 #150 overlimit
+N = 40 #100 overlimit
 
 path ="samples"
 sub = 'train'
