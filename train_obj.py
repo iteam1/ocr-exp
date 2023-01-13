@@ -70,7 +70,7 @@ seq = iaa.Sequential([
 ], random_order=True) # apply augmenters in random order
 
 DIM=227
-N = 150
+N = 100 #150 overlimit
 
 path ="samples"
 sub = 'train'
@@ -99,7 +99,7 @@ for i,label in enumerate(labels):
             cv2.imwrite(f"{sub}/{label}/{im.strip('.jpg')}_{j}.jpg",images_aug[j])
             
             
-N = 100
+N = 20
 path ="samples"
 sub = 'test'
 
