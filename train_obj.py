@@ -39,7 +39,7 @@ for f in features:
     ms.append(int(n/f))
 print('ms:\n',ms)
 
-N = 1
+N = 20
 print(f'image per label {n*N}')
 
 seq = iaa.Sequential([
@@ -103,7 +103,7 @@ for i,label in enumerate(labels):
         for j in range(N*ms[i]):
             cv2.imwrite(f"{sub}/{label}/{im.strip('.jpg')}_{j}.jpg",images_aug[j])
             
-N = 20
+N = 10
 path ="samples"
 sub = 'test'
 
@@ -137,7 +137,7 @@ X = []
 y = [] #number
 
 path="train"
-IMG_SIZE=100
+IMG_SIZE=128
 
 labels = os.listdir(path)
 
