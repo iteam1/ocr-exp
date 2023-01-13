@@ -488,7 +488,9 @@ class GGHomeMini:
         self.ocr = Extractor()
         self.ocr.load_model()
         
-        self.K = 41
+        self.K = 41 # dilate kernel size
+        self.model = 'H2C' # specific model number of GGHomeMini
+        self.serial_no = 14 # specific serial number of GGHomeMini
         
     def extract(self,img):
         '''
@@ -554,16 +556,41 @@ class GGHomeMini:
 
         return rec_res
     
-    def infer(self,result_list):
+    def infer(self,res):
         '''
         Infer serial & model number in ocr's result
         Args:
             res: result of ocr
         Return:
-            serial: serial number
             model: model number
+            serial: serial number
         '''
-        pass
+        model = None
+        serial = None
+        
+        for r in res[0]:
+            t = r[1][0].lower()
+            #print(t)
+            # infer model
+            count = t.count(self.model.lower())
+            if count > 2:
+                model = self.model
+            # infer serial 14 digit
+            if len(t)>self.serial_no:
+                for i in range(len(t)):
+                    s = t[i:i+self.serial_no]
+                    if len(s) == self.serial_no\
+                        and all([c.isalnum() for c in s])\
+                        and all([c.isnumeric() for c in s[:4]]):
+                        #print('serial: ',s)
+                        serial = s
+                        
+        if model:
+            model = model.upper()
+        if serial:
+            serial = serial.upper()
+            
+        return model,serial
     
     def run(self,img):
         '''
@@ -574,7 +601,9 @@ class GGHomeMini:
             model: model number
             serial: serial number
         '''
-        pass
+        res = self.extract(img)
+        model,serial = self.infer(res)
+        return model,serial
     
 class Extractor2:
 
