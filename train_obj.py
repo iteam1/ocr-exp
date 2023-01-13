@@ -39,6 +39,9 @@ for f in features:
     ms.append(int(n/f))
 print('ms:\n',ms)
 
+N = 1
+print(f'image per label {n*N}')
+
 seq = iaa.Sequential([
     iaa.Fliplr(0.5), # horizontal flips
     iaa.Crop(percent=(0, 0.1)), # random crops
@@ -71,7 +74,6 @@ seq = iaa.Sequential([
 ], random_order=True) # apply augmenters in random order
 
 DIM=227
-N = 40 #100 overlimit
 
 path ="samples"
 sub = 'train'
@@ -90,7 +92,7 @@ for i,label in enumerate(labels):
     label_dir = os.path.join(path,label)
     imgs = os.listdir(label_dir)
     for im in imgs:
-        img = cv2.imread(os.path.join(label_dir,im),0)
+        img = cv2.imread(os.path.join(label_dir,im))
         # resize image
         img = cv2.resize(img,(DIM,DIM), interpolation = cv2.INTER_AREA)
         # duplicate
@@ -100,7 +102,6 @@ for i,label in enumerate(labels):
         
         for j in range(N*ms[i]):
             cv2.imwrite(f"{sub}/{label}/{im.strip('.jpg')}_{j}.jpg",images_aug[j])
-            
             
 N = 20
 path ="samples"
@@ -120,7 +121,7 @@ for i,label in enumerate(labels):
     label_dir = os.path.join(path,label)
     imgs = os.listdir(label_dir)
     for im in imgs:
-        img = cv2.imread(os.path.join(label_dir,im),0)
+        img = cv2.imread(os.path.join(label_dir,im))
         # resize image
         img = cv2.resize(img,(DIM,DIM), interpolation = cv2.INTER_AREA)
         # duplicate
@@ -143,7 +144,7 @@ labels = os.listdir(path)
 for l in labels:
     imgs = os.listdir(os.path.join(path,l))
     for im in imgs:
-        img = cv2.imread(os.path.join(path,l,im),0)
+        img = cv2.imread(os.path.join(path,l,im))
         img = cv2.resize(img,(IMG_SIZE,IMG_SIZE))
         X.append(img)
         y.append(int(l))
@@ -168,9 +169,7 @@ print("X_val: ",X_val.shape)
 print("y_train: ",y_train.shape)
 print("y_val: ",y_val.shape)
 
-print('traing...')
-
-svc = SVC(kernel='rbf',gamma='auto') #linear
+svc = SVC(kernel='linear',gamma='auto') #linear
 svc.fit(X_train, y_train)
 
 print('testing...')
