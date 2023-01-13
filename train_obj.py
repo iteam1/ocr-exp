@@ -75,6 +75,8 @@ N = 100 #150 overlimit
 path ="samples"
 sub = 'train'
 
+print('creating training dataset')
+
 if not os.path.isdir(f'{sub}'):
         os.mkdir(f'{sub}')
         
@@ -103,6 +105,8 @@ N = 20
 path ="samples"
 sub = 'test'
 
+print('creating testing dataset')
+
 if not os.path.isdir(f'{sub}'):
         os.mkdir(f'{sub}')
         
@@ -125,7 +129,8 @@ for i,label in enumerate(labels):
         
         for j in range(N*ms[i]):
             cv2.imwrite(f"{sub}/{label}/{im.strip('.jpg')}_{j}.jpg",images_aug[j])
-            
+
+print('loading training dataset') 
 X = []
 y = [] #number
 
