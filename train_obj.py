@@ -70,7 +70,7 @@ seq = iaa.Sequential([
 ], random_order=True) # apply augmenters in random order
 
 DIM=227
-N = 100
+N = 150
 
 path ="samples"
 sub = 'train'
@@ -99,7 +99,7 @@ for i,label in enumerate(labels):
             cv2.imwrite(f"{sub}/{label}/{im.strip('.jpg')}_{j}.jpg",images_aug[j])
             
             
-N = 10
+N = 100
 path ="samples"
 sub = 'test'
 
@@ -164,8 +164,10 @@ print("y_val: ",y_val.shape)
 
 print('traing...')
 
-svc = SVC(kernel='linear',gamma='auto')
+svc = SVC(kernel='rbf',gamma='auto') #linear
 svc.fit(X_train, y_train)
+
+print('testing...')
 
 y2 = svc.predict(X_val)
 
