@@ -39,7 +39,7 @@ for f in features:
     ms.append(int(n/f))
 print('ms:\n',ms)
 
-N = 20
+N = 30
 print(f'image per label {n*N}')
 
 seq = iaa.Sequential([
