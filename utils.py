@@ -1094,10 +1094,10 @@ def write_result_to_json_file(json_path, boxes, txts, scores, image_path,result_
 class Extractor:
 
     def __init__(self):
-        self.input = "ppocr/detected.txt" # path to input image
-        self.output = "ppocr/output.json" # path to output image
-        self.det_model_file_path = "ppocr/ch_PP-OCRv3_det_infer/inference.pdmodel" # path to det_model_file_path
-        self.rec_model_file_path = "ppocr/ch_PP-OCRv3_rec_infer/inference.pdmodel" # path to rec_model_file_path
+        self.input = "models/detected.txt" # path to input image
+        self.output = "models/output.json" # path to output image
+        self.det_model_file_path = "models/ch_PP-OCRv3_det_infer/inference.pdmodel" # path to det_model_file_path
+        self.rec_model_file_path = "models/ch_PP-OCRv3_rec_infer/inference.pdmodel" # path to rec_model_file_path
         self.det_compiled_model = None # det model loaded
         self.rec_compiled_model = None # rec model loaded
         
