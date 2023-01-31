@@ -1,0 +1,1 @@
+sudo /home/greystone/GG_Non_Phone/ML_MODULE/miniconda3_py38/envs/env_main_app/bin/python /home/greystone/GG_Non_Phone/ML_MODULE/app/test_ocr.py /home/greystone/Downloads/Data/DataFromHailu
