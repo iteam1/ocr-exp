@@ -25,3 +25,6 @@ train
 # ml model
 *.h5
 *.sav
+
+# pgnet model
+e2e_server_pgnetA_infer
