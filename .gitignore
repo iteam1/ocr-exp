@@ -19,7 +19,7 @@ PaddleOCR
 paddle25
 
 # color classifier
-images
+egs
 colors
 augs
 
