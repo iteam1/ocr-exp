@@ -10,19 +10,18 @@ env
 __pycache__
 
 # notebook
-.ipynb_checkpoints 
+.ipynb_checkpoints
 
 #PaddleOCR
 PaddleOCR
+
 #PaddleOCR release/2.5
 paddle25
-
-# GG Nest Audio samples
-gg
 
 # color classifier
 test
 train
+colors
 
 # ml model
 *.h5
