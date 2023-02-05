@@ -19,9 +19,9 @@ PaddleOCR
 paddle25
 
 # color classifier
-test
-train
+images
 colors
+augs
 
 # ml model
 *.h5
