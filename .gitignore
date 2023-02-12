@@ -31,7 +31,6 @@ augs
 e2e_server_pgnetA_infer
 
 # dataset
-colors
 augs
 train
 test
