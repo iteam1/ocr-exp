@@ -1,5 +1,5 @@
 # ppocr
-paddle OCR
+ocr experiments
 
 # references
 
