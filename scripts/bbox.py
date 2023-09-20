@@ -1,3 +1,4 @@
+import sys
 import cv2
 import numpy as np
 from craft_text_detector import (
@@ -11,10 +12,12 @@ from craft_text_detector import (
 )
 
 #init
-img_path = 'assets/txt.png'
+img_path = sys.argv[1]
 cuda_opt = False
 THRESH = 200
+kernel = np.ones((10,7), np.uint8)
 
+# read image
 img = read_image(img_path)
 
 # load models
@@ -39,6 +42,7 @@ h,w,_ = txt_score.shape
 
 # resize img
 img_resize = cv2.resize(img,(w,h),interpolation = cv2.INTER_LINEAR)
+img_org = img_resize.copy()
 
 # convert to hsv
 img_hsv = cv2.cvtColor(txt_score, cv2.COLOR_BGR2HSV)
@@ -57,8 +61,30 @@ mask1 = cv2.inRange(img_hsv, upper_min, upper_max)
 mask = mask0+mask1
 
 # find contours
-contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-cv2.drawContours(img_resize, contours, -1, (0,255,0), 3)
+for i,cnt in enumerate(contours):
+    # init
+    X = []
+    Y = []
+    blank = np.zeros((h,w),np.uint8)
+    cv2.drawContours(blank, [cnt], 0, (255), -1)
+    
+    # dilate
+    blank = cv2.dilate(blank, kernel, iterations=5)
+    coords = cv2.findNonZero(blank)
+    for coord in coords:
+        x,y = coord[0]
+        X.append(x)
+        Y.append(y)
+    x_min = sorted(X)[0]
+    x_max = sorted(X)[-1]
+    y_min = sorted(Y)[0]
+    y_max = sorted(Y)[0-1]
 
-cv2.imwrite('res.jpg',res)
+    #print(f'x_min {x_min},x_max {x_max},y_min {y_min},y_max {y_max}')
+    character = img_org[y_min:y_max,x_min:x_max]
+    cv2.rectangle(img_resize, (x_min,y_min), (x_max,y_max), (0,0,255), 1)
+    cv2.imwrite(f'{i}_char.jpg',character)
+
+cv2.imwrite('res.jpg',img_resize)

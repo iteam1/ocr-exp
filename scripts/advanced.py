@@ -1,5 +1,5 @@
 '''
-python3 scripts/advance.py assets/txt.png
+python3 scripts/advanced.py assets/txt.jpg
 '''
 import sys
 # import craft functions

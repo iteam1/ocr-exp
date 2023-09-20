@@ -1,6 +1,6 @@
 import cv2
 
-img_path = "assets/txt.png"
+img_path = "assets/txt.jpg"
 heatmap_path = "assets/txt_text_score_heatmap.png"
 
 img = cv2.imread(img_path)

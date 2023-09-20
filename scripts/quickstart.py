@@ -1,5 +1,5 @@
 '''
-python3 scripts/quickstart.py assets/txt.png
+python3 scripts/quickstart.py assets/txt.jpg
 '''
 import sys
 # import Craft class
