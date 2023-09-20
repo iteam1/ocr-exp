@@ -2,11 +2,6 @@
 python3 scripts/advance.py assets/txt.png
 '''
 import sys
-# import Craft class
-from craft_text_detector import Craft
-
-cuda_opt = False
-
 # import craft functions
 from craft_text_detector import (
     read_image,
@@ -21,6 +16,7 @@ from craft_text_detector import (
 # set image path and export folder directory
 image = sys.argv[1] # can be filepath, PIL image or numpy array
 output_dir = 'outputs/'
+cuda_opt = False
 
 # read image
 image = read_image(image)
