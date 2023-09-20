@@ -1,4 +1,4 @@
-# ppocr
+# ocr-exp
 ocr experiments
 
 # references
