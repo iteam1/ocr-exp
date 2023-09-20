@@ -1,5 +1,5 @@
 '''
-python3 scripts/advance.py assets/1.png
+python3 scripts/advance.py assets/txt.png
 '''
 import sys
 # import Craft class
