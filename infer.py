@@ -21,9 +21,10 @@ from craft_text_detector import (
 )
 
 # Init
+crop_opt = False
 cuda_opt = False
 DIM = 224
-THRESH = 0.1
+THRESH = 0.5
 image_path = sys.argv[1]
 dst = 'dst'
 training_path ='training'
@@ -193,7 +194,8 @@ if __name__ == "__main__":
         x_center = int((x_min+x_max)/2)
         y_center = int((y_min+y_max)/2)
         c = img_resize[y_min:y_max,x_min:x_max]
-        cv2.imwrite('c.jpg',c)
+        if crop_opt:
+            cv2.imwrite(f'c_{j}.jpg',c)
         pred, coef = predict(cv2.cvtColor(c,cv2.COLOR_BGR2RGB),resnet18,classes)
         if coef > THRESH:
             if pred == '0':

@@ -23,7 +23,7 @@ from craft_text_detector import (
 # Init
 cuda_opt = False
 DIM = 224
-THRESH = 0.8
+THRESH = 0.6
 images_path = sys.argv[1]
 dst = 'dst'
 training_path ='training'
