@@ -1,86 +1,69 @@
 '''
-python3 predict.py model1/models/model_9866697.sav\
-        data/unseen/1.jpg
+python3 classify.py /path/to/image
 '''
+import os
 import sys
 import cv2
-import pickle
+import torch
 import numpy as np
+from PIL import Image
+from torchvision import models, transforms
 
-model_path = sys.argv[1]
-image_path = sys.argv[2]
+# Init
+DIM = 224
+THRESH = 0.8
+img_path = sys.argv[1]
+dst = 'training'
+classes_path = os.path.join(dst,'classes.txt')
+model_path = os.path.join(dst,'checkpoint.pt')
 
-class Inference:
-    
-    def __init__(self):
-        self.loaded_model = None
-        self.dict = {0: "1", 1: "O", 2: "Q", 3: "0", 4: "I"}
-        self.dict_invert = {v:k for k,v in self.dict.items()}
-    
-    def load_model(self, model_path):
-        '''
-        Load pretrained model (*.sav)
-        Args:
-            - model_path: path of pretrained model
-        Return:
-            Load model into class.loaded_model
-        '''
-        # load the model from disk
-        self.loaded_model = pickle.load(open(model_path, 'rb'))
-        print("Validator loaded pretrain model!")
-        
-    def predict(self, img):
-        '''
-        Predict new income data
-        Args:
-            - img(str or numpy.array): path or numpy array of image
-        Return:
-            - pred(str): predicted label or None
-        '''
-        DIM = 224
-        pred = None
-        
-        # check model loaded
-        if not self.load_model:
-            print("No load pretrained model!")
-            
-            return pred
-    
-        # check type of param img
-        typ = str(type(img))
-        
-        if typ == "<class 'str'>":
-            img = cv2.imread(img)
-        
-        elif typ == "<class 'numpy.ndarray'>":
-            pass
-        
-        else:
-            print(f'{type(img)} is not supported!')
-            
-            return pred
-        
-        # preprocess income dat
-        img = img/255.0
-        resized = cv2.resize(img,(DIM,DIM), interpolation=cv2.INTER_AREA)
-        resized = resized.reshape(1,-1)
-        
-        # predict
-        y = self.loaded_model.predict(resized)
-        probs = self.loaded_model.predict_proba(resized)
-        prob_argmax = np.argmax(probs)
-        coef = probs[0][int(y)]
-        
-        return self.dict[int(y)], coef
+transform = transforms.Compose([
+    transforms.Resize((DIM,DIM)),
+    transforms.ToTensor()])
+
+def predict(img,model,classes):
+
+    # Read image
+    im_pil = Image.fromarray(img)
+    input = transform(im_pil)
+    input = torch.unsqueeze(input, 0)
+    input = input.to(device)
+
+    # Predict
+    output = model(input)
+
+    # Post Process
+    output = output.softmax(1)
+    output = output.cpu().detach().numpy() 
+    output = output.ravel()
+    output_argmax = np.argmax(output)
+    output_prob = output[output_argmax]
+    output_class = classes[output_argmax]
+
+    return (output_class,output_prob)
 
 if __name__ == "__main__":
-    
-    predictor = Inference()
-    
-    predictor.load_model(model_path)
-    
-    img = cv2.imread(image_path)
-    
-    pred, coef = predictor.predict(img)
-    
-    print(image_path,pred, coef)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print('Predict on',device)
+
+    # Load classes
+    with open(classes_path,'r') as f:
+        classes = f.readlines()
+    classes = [x.replace('\n','') for x in classes]
+    print(classes)
+
+    # Load model
+    model = torch.load(model_path)
+    model = model.to(device)
+    model.eval()
+
+    # Read image
+    img = cv2.imread(img_path)
+    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+
+    # Predict
+    pred = predict(img,model,classes)
+    print(pred)
+        
+    print('Done!')

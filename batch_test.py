@@ -1,5 +1,5 @@
 '''
-python3 infer.py <path_to_image>
+python3 batch_test.py <path_to_data>
 '''
 import os
 import sys
@@ -23,8 +23,8 @@ from craft_text_detector import (
 # Init
 cuda_opt = False
 DIM = 224
-THRESH = 0.1
-image_path = sys.argv[1]
+THRESH = 0.8
+images_path = sys.argv[1]
 dst = 'dst'
 training_path ='training'
 classes_path = os.path.join(training_path,'classes.txt')
@@ -57,8 +57,7 @@ def predict(img,model,classes):
 
     return (output_class,output_prob)
 
-def crop_char(img_path,refine_net,craft_net):
-    
+def crop_char(img_path,refine_net,craft_net):    
     # init
     bboxes = []
     
@@ -156,17 +155,12 @@ def crop_char(img_path,refine_net,craft_net):
 
 if __name__ == "__main__":
     
-    print("CRAFT crop characters")
-    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print('Predict on',device)
 
     # create destination folder
     if not os.path.exists(dst):
         os.mkdir(dst)
-    
-    image_name = image_path.split('/')[-1]
-    image_name = image_name.split('.')[0]
 
     # Load classes
     with open(classes_path,'r') as f:
@@ -181,33 +175,42 @@ if __name__ == "__main__":
     resnet18 = resnet18.to(device)
     resnet18.eval()
     print("Load models done")
-    
-    start_time = time.time()
 
-    # preprocess
-    img_resize, bboxes,_ = crop_char(image_path,refine_net,craft_net)
-    img_debug = img_resize.copy()
+    images = os.listdir(images_path)
+
+    for image in images:
+
+        print('image:',image)
+
+        image_path = os.path.join(images_path,image)
+        image_name = image_path.split('/')[-1]
+        image_name = image_name.split('.')[0]
     
-    for j,bbox in enumerate(bboxes):
-        x_min,y_min,x_max,y_max = bbox
-        x_center = int((x_min+x_max)/2)
-        y_center = int((y_min+y_max)/2)
-        c = img_resize[y_min:y_max,x_min:x_max]
-        cv2.imwrite('c.jpg',c)
-        pred, coef = predict(cv2.cvtColor(c,cv2.COLOR_BGR2RGB),resnet18,classes)
-        if coef > THRESH:
-            if pred == '0':
-                pred = '@'
-            elif pred == 'O':
-                pred = 'O'
-        else:
-            pred = "?"
-        string += str(pred)
-        cv2.putText(img_debug,str(pred),(x_center,y_center), cv2.FONT_HERSHEY_SIMPLEX, 
-                   1, (255,0,255), 2, cv2.LINE_AA)
+        start_time = time.time()
+
+        # preprocess
+        img_resize, bboxes,_ = crop_char(image_path,refine_net,craft_net)
+        img_debug = img_resize.copy()
         
-        # cv2.imwrite(os.path.join(dst,f'{j}_{pred}.jpg'),c)
+        for j,bbox in enumerate(bboxes):
+            x_min,y_min,x_max,y_max = bbox
+            x_center = int((x_min+x_max)/2)
+            y_center = int((y_min+y_max)/2)
+            c = img_resize[y_min:y_max,x_min:x_max]
+            pred, coef = predict(cv2.cvtColor(c,cv2.COLOR_BGR2RGB),resnet18,classes)
+            if coef > THRESH:
+                if pred == '0':
+                    pred = '@'
+                elif pred == 'O':
+                    pred = 'O'
+            else:
+                pred = "?"
+            string += str(pred)
+            cv2.putText(img_debug,str(pred),(x_center,y_center), cv2.FONT_HERSHEY_SIMPLEX, 
+                    1, (255,0,255), 2, cv2.LINE_AA)
+            
+            # cv2.imwrite(os.path.join(dst,f'{j}_{pred}.jpg'),c)
+            
+        print(f"Done in {time.time()-start_time} s")
         
-    print(f"Done in {time.time()-start_time} s")
-    
-    cv2.imwrite(os.path.join(dst,image_name+'.jpg'),img_debug)
+        cv2.imwrite(os.path.join(dst,image_name+'.jpg'),img_debug)                          
