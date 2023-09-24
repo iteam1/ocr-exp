@@ -31,11 +31,11 @@ transform = transforms.Compose([
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor()])
 
-trainset = datasets.ImageFolder('dataset/train',transform=transform)
+trainset = datasets.ImageFolder('data/dataset/train',transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                           shuffle=True, num_workers=2)
 
-valset = datasets.ImageFolder('dataset/val',transform=transform)
+valset = datasets.ImageFolder('data/dataset/val',transform=transform)
 valloader = torch.utils.data.DataLoader(valset, batch_size=batch_size,
                                           shuffle=True, num_workers=2)
 
