@@ -1,5 +1,0 @@
-CUDA_VISIBLE_DEVICES=-1 python3 train.py
-
-CUDA_VISIBLE_DEVICES=-1 python3 infer.py data/sn/image_14092023083930.jpg
-
-CUDA_VISIBLE_DEVICES=-1 python3 batch_test.py data/bug
