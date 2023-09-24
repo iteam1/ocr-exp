@@ -1,11 +1,16 @@
 # ocr-exp
 ocr experiments
 
-# pretrained models
 
-[craft_mlt_25k.pth](https://drive.google.com/uc?id=1bupFXqT-VU6Jjeul13XP7yx2Sg5IHr4J)
+# craft-text-detector
 
-[craft_refiner_CTW1500.pth](https://drive.google.com/uc?id=1xcE9qpJXp4ofINwXWVhhQIh9S8Z7cuGj)
+insall `torch==1.12.0`, `torchvision==0.13.0`, `craft-text-detector`: `pip install torch==1.12.0+cu102 torchvision==0.13.0+cu102 torchaudio==0.12.0 --extra-index-url https://download.pytorch.org/whl/cu102`
+
+pretained model:
+
+- [craft_mlt_25k.pth](https://drive.google.com/uc?id=1bupFXqT-VU6Jjeul13XP7yx2Sg5IHr4J)
+
+- [craft_refiner_CTW1500.pth](https://drive.google.com/uc?id=1xcE9qpJXp4ofINwXWVhhQIh9S8Z7cuGj)
 
 # references
 
@@ -20,3 +25,5 @@ ocr experiments
 [https://github.com/fcakyon/craft-text-detector](https://github.com/clovaai/CRAFT-pytorch)
 
 [craft-text-detector](https://github.com/fcakyon/craft-text-detector)
+
+[pytorch-install-previous-versions](https://pytorch.org/get-started/previous-versions/)
