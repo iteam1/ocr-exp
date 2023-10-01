@@ -1,6 +1,7 @@
 '''
-python3 scripts/classify/test.py
+python3 scripts/classify/test.py path/to/folder
 '''
+import sys
 import os
 import cv2
 import torch
@@ -13,7 +14,7 @@ from torchvision import models, transforms
 DIM = 224
 THRESH = 0.8
 dst = 'dst'
-src ='dataset/test'
+src =  sys.argv[1] #'dataset/test'
 image_files = os.listdir(src)
 image_path = os.path.join(src,random.choice(image_files))
 output_path = 'training'

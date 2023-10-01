@@ -18,8 +18,8 @@ from tempfile import TemporaryDirectory
 # Init
 DIM = 224
 batch_size = 16
-epochs = 5
-learning_rate = 0.002
+epochs = 10
+learning_rate = 0.0005
 dst = 'training'
 model_path = os.path.join(dst,'checkpoint.pt')
 
