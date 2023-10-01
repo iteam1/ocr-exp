@@ -1,5 +1,5 @@
 '''
-python3 scripts/classify/predict.py
+python3 scripts/classify/test.py
 '''
 import os
 import cv2
@@ -13,7 +13,7 @@ from torchvision import models, transforms
 DIM = 224
 THRESH = 0.8
 dst = 'dst'
-src ='data/characters'
+src ='dataset/test'
 image_files = os.listdir(src)
 image_path = os.path.join(src,random.choice(image_files))
 output_path = 'training'
@@ -82,20 +82,35 @@ if __name__ == "__main__":
     model = model.to(device)
     model.eval()
 
-    # Read image
-    img = cv2.imread(image_path)
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-    img_padding = add_padding(img)
+    # Check labels
+    labels = os.listdir(src)
 
-    # Predict
-    pred = predict(img_padding,model,classes)
-    print(pred)
-
-    cv2.imwrite(os.path.join(dst,'vis.jpg'),img_padding)
-
-    # Display
-    # cv2.imshow('visualize',img_padding)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    for i,label in enumerate(labels):
         
+        label_path = os.path.join(src,label)
+        images = os.listdir(label_path)
+
+        num_of_correct = 0
+        
+        for image in images:
+
+            image_path = os.path.join(src,label,image)
+
+            # Read image
+            img = cv2.imread(image_path)
+            img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+            img_padding = add_padding(img)
+
+            # Predict
+            pred_class,pred_score = predict(img_padding,model,classes)
+            
+            if pred_class == label:
+                num_of_correct +=1
+            else:
+                image_name = image.split('.')[0]
+                image_name += "_" + pred_class + ".jpg"
+                cv2.imwrite(os.path.join(dst,image_name),img)
+
+        print(str(i),'/',str(len(labels)),'Label:',label,' Accuracy:',str(round(num_of_correct/len(images),2)),"%")
+
     print('Done!')
