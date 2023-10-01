@@ -4,7 +4,7 @@ ocr experiments
 
 # craft-text-detector
 
-insall `torch==1.12.0`, `torchvision==0.13.0`, `craft-text-detector`: `pip install torch==1.12.0+cu102 torchvision==0.13.0+cu102 torchaudio==0.12.0 --extra-index-url https://download.pytorch.org/whl/cu102`
+insall `torch==1.12.0`, `torchvision==0.13.0`, `craft-text-detector`: `pip install torch==1.12.0 torchvision==0.13.0`
 
 pretained model:
 
@@ -13,6 +13,10 @@ pretained model:
 - [craft_refiner_CTW1500.pth](https://drive.google.com/uc?id=1xcE9qpJXp4ofINwXWVhhQIh9S8Z7cuGj)
 
 # references
+
+[Algorithms for Image Comparison](https://www.baeldung.com/cs/image-comparison-algorithm)
+
+[Comparing images for similarity using siamese networks, Keras, and TensorFlow](https://pyimagesearch.com/2020/12/07/comparing-images-for-similarity-using-siamese-networks-keras-and-tensorflow/)
 
 [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR)
 

@@ -1,5 +1,0 @@
-# command notes
-
-CUDA_VISIBLE_DEVICES=0 python3 train.py
-
-python3 classify.py dataset/train/0/FavSx_5.jpg

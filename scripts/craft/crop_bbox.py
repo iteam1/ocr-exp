@@ -1,5 +1,10 @@
+'''
+python3 scripts/craft/crop_bbox.py
+'''
+import os
 import sys
 import cv2
+import random
 import numpy as np
 from craft_text_detector import (
     read_image,
@@ -12,10 +17,16 @@ from craft_text_detector import (
 )
 
 #init
-img_path = sys.argv[1]
+src ='data/sn'
+dst = 'dst'
+img_files = os.listdir(src)
+img_path = os.path.join(src,random.choice(img_files))
 cuda_opt = False
 THRESH = 200
 kernel = np.ones((10,7), np.uint8)
+
+if not os.path.exists(dst):
+    os.mkdir(dst)
 
 # read image
 img = read_image(img_path)
@@ -85,6 +96,6 @@ for i,cnt in enumerate(contours):
     #print(f'x_min {x_min},x_max {x_max},y_min {y_min},y_max {y_max}')
     character = img_org[y_min:y_max,x_min:x_max]
     cv2.rectangle(img_resize, (x_min,y_min), (x_max,y_max), (0,0,255), 1)
-    cv2.imwrite(f'{i}_char.jpg',character)
+    cv2.imwrite(os.path.join(dst,f'char{i}.jpg'),cv2.cvtColor(character,cv2.COLOR_BGR2RGB))
 
-cv2.imwrite('res.jpg',img_resize)
+cv2.imwrite(os.path.join(dst,'vis.jpg'),cv2.cvtColor(img_resize,cv2.COLOR_BGR2RGB))

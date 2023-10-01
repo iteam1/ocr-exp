@@ -1,6 +1,8 @@
 '''
-python3 scripts/advanced.py assets/txt.jpg
+python3 scripts/craft/text_detector.py
 '''
+import os
+import random
 import sys
 # import craft functions
 from craft_text_detector import (
@@ -14,7 +16,9 @@ from craft_text_detector import (
 )
 
 # set image path and export folder directory
-image = sys.argv[1] # can be filepath, PIL image or numpy array
+src ='data/sn'
+image_files = os.listdir(src)
+image = os.path.join(src,random.choice(image_files)) # can be filepath, PIL image or numpy array
 output_dir = 'outputs/'
 cuda_opt = False
 
@@ -36,8 +40,6 @@ prediction_result = get_prediction(
     cuda=cuda_opt,
     long_size=1280
 )
-
-print('prediction_result:\n',prediction_result)
 
 # export detected text regions
 exported_file_paths = export_detected_regions(
