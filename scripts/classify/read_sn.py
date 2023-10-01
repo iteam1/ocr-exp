@@ -42,6 +42,18 @@ transform = transforms.Compose([
     transforms.Resize((DIM,DIM)),
     transforms.ToTensor()])
 
+def sort_bounding_boxes_by_area(bounding_boxes):
+    """
+    Sort a list of bounding boxes by their area in ascending order.
+
+    Args:
+        bounding_boxes (list): List of bounding boxes, each represented as a tuple (x_min, y_min, x_max, y_max).
+
+    Returns:
+        list: List of bounding boxes sorted by area in ascending order.
+    """
+    return sorted(bounding_boxes, key=lambda box: (box[2] + box[0])/2)
+
 def add_padding(image):
     h,w,c = image.shape
     if w < h:
@@ -90,7 +102,6 @@ def batch_predict(imgs,model,classes):
 
     # Print the list of predicted classes
     print(pred_of_characters)
-
 
 if __name__ == "__main__":
 
@@ -153,9 +164,10 @@ if __name__ == "__main__":
     # find contours
     characters = []
     batch_imgs = []
+    bbox_coords = []
     contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    for i,cnt in enumerate(contours):
+    for cnt in contours:
         # init
         X = []
         Y = []
@@ -169,12 +181,22 @@ if __name__ == "__main__":
             x,y = coord[0]
             X.append(x)
             Y.append(y)
+
+        # find bounding box coordinate
         x_min = sorted(X)[0]
         x_max = sorted(X)[-1]
         y_min = sorted(Y)[0]
         y_max = sorted(Y)[-1]
-
         #print(f'x_min {x_min},x_max {x_max},y_min {y_min},y_max {y_max}')
+        bbox_coords.append((x_min,y_min,x_max,y_max))
+
+        cv2.rectangle(img_resize, (x_min,y_min), (x_max,y_max), (0,0,255), 1)
+
+    # sort coordinate
+    sorted_bbox_coords = sort_bounding_boxes_by_area(bbox_coords)
+
+    for i,coord in enumerate(sorted_bbox_coords):
+        x_min,y_min,x_max,y_max = coord
         character = img_org[y_min:y_max,x_min:x_max]
         characters.append(character)
         cv2.rectangle(img_resize, (x_min,y_min), (x_max,y_max), (0,0,255), 1)
