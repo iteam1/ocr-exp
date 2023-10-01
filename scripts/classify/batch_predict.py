@@ -47,7 +47,7 @@ def batch_predict(imgs,model,classes):
 
     batch_tensors = []
     hstack_img = np.hstack((cv2.resize(img,(DIM,DIM),interpolation=cv2.INTER_AREA) for img in imgs))
-    cv2.imwrite(os.path.join(dst,'vis.jpg'),hstack_img)
+    cv2.imwrite(os.path.join(dst,'res.jpg'),hstack_img)
     
     for img in imgs:
         # Read image
