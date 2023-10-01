@@ -1,4 +1,5 @@
-torchvision==0.13.0
-craft-text-detector
+torch
+torchvision
+# craft-text-detector
 scikit-image
 pandas

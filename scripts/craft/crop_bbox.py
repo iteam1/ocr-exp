@@ -1,8 +1,10 @@
 '''
 python3 scripts/craft/crop_bbox.py
 '''
-import os
 import sys
+sys.path.append('/home/gom/Workspace/ocr-exp/modules')
+
+import os
 import cv2
 import random
 import numpy as np

@@ -1,8 +1,7 @@
 '''
-python3 scripts/craft/crop_bbox.py
+python3 scripts/classify/read_sn.py
 '''
 import os
-import sys
 import cv2
 import random
 import numpy as np
@@ -11,9 +10,6 @@ from craft_text_detector import (
     load_craftnet_model,
     load_refinenet_model,
     get_prediction,
-    export_detected_regions,
-    export_extra_results,
-    empty_cuda_cache
 )
 
 #init

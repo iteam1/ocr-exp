@@ -1,6 +1,9 @@
 '''
 python3 scripts/craft/quickstart.py
 '''
+import sys
+sys.path.append('/home/gom/Workspace/ocr-exp/modules')
+
 import os
 import random
 # import Craft class

@@ -1,10 +1,11 @@
 '''
 python3 scripts/craft/text_detector.py
 '''
-import os
-import random
 import sys
 sys.path.append('/home/gom/Workspace/ocr-exp/modules')
+
+import os
+import random
 # import craft functions
 from craft_text_detector import (
     read_image,
