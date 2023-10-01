@@ -1,7 +1,7 @@
 python3 utils/pre_process.py
 
 python3 scripts/classify/augment.py data/ground_truth dataset train 2000
-python3 scripts/classify/augment.py data/ground_truth dataset val 200
+python3 scripts/classify/augment.py data/ground_truth dataset val 500
 python3 scripts/classify/augment.py data/ground_truth dataset test 100
 
 python3 scripts/classify/train.py
@@ -12,6 +12,8 @@ python3 scripts/classify/test.py data/ground_truth
 
 python3 scripts/classify/predict.py
 
-python3 scripts/classify/inference.py data/characters/remote_crop_0HQsQ_0.jpg
+python3 scripts/classify/inference.py data/falses/5/remote_crop_Djj9R_5.jpg
 
 python3 scripts/classify/batch_predict.py
+
+python3 scripts/classify/read_sn.py
