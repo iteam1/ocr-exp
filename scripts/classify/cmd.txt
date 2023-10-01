@@ -1,3 +1,5 @@
+python3 utils/pre_process.py
+
 python3 scripts/classify/augment.py data/labels dataset train 500
 python3 scripts/classify/augment.py data/labels dataset val 100
 python3 scripts/classify/augment.py data/labels dataset test 50
