@@ -77,7 +77,7 @@ if __name__ == "__main__":
     # instance of image augmentation
     augmentation = iaa.Sequential([
     # iaa.Resize({"height": 0.5, "width": 0.5}),
-    iaa.Flipud(0.5),                                                # Horizontal flip 50% of images
+    # iaa.Flipud(0.5),                                              # Horizontal flip 50% of images
     # iaa.Crop(percent=(0, 0.20)),                                  # Crop all images between 0% to 20%
     iaa.GaussianBlur(sigma=(0, 0.5)),                               # Add slight blur to images
     iaa.Multiply((0.95, 1.05), per_channel=0.02),                   # Slightly brighten, darken, or recolor images    

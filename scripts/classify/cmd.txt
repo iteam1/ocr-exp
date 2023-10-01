@@ -1,7 +1,11 @@
 python3 utils/pre_process.py
 
-python3 scripts/classify/augment.py data/labels dataset train 500
-python3 scripts/classify/augment.py data/labels dataset val 100
-python3 scripts/classify/augment.py data/labels dataset test 50
+python3 scripts/classify/augment.py dst dataset train 500
+python3 scripts/classify/augment.py dst dataset val 100
+python3 scripts/classify/augment.py dst dataset test 50
 
 python3 scripts/classify/train.py
+
+python3 scripts/classify/predict.py
+
+python3 scripts/classify/inference.py dst/O/remote_crop_0ISht_8.jpg
