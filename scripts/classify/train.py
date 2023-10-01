@@ -1,5 +1,5 @@
 '''
-python3 train.py
+python3 scripts/classify/train.py
 '''
 import os
 import time
@@ -18,7 +18,7 @@ from tempfile import TemporaryDirectory
 # Init
 DIM = 224
 batch_size = 16
-epochs = 20
+epochs = 5
 learning_rate = 0.002
 dst = 'training'
 model_path = os.path.join(dst,'checkpoint.pt')

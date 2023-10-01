@@ -1,4 +1,3 @@
-torch==1.12.0
-torchvision==0.13.0
 craft-text-detector
 scikit-image
+pandas

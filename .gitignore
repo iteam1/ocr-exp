@@ -21,5 +21,6 @@ src
 dst
 tmp
 outputs
+training
 __pycache__
 .ipynb_checkpoints
