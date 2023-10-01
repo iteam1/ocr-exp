@@ -2,7 +2,6 @@
 python3 scripts/classify/predict.py
 '''
 import os
-import sys
 import cv2
 import torch
 import random
