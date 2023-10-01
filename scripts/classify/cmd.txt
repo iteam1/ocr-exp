@@ -6,6 +6,10 @@ python3 scripts/classify/augment.py dst dataset test 50
 
 python3 scripts/classify/train.py
 
+python3 scripts/classify/test.py
+
 python3 scripts/classify/predict.py
 
-python3 scripts/classify/inference.py dst/O/remote_crop_0ISht_8.jpg
+python3 scripts/classify/inference.py data/characters/remote_crop_0HQsQ_0.jpg
+
+python3 scripts/classify/batch_predict.py
