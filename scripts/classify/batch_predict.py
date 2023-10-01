@@ -12,11 +12,11 @@ from torchvision import models, transforms
 # Init
 DIM = 224
 THRESH = 0.8
+NO_IMAGE = [1,2,3,4,5,6]
 dst = 'dst'
 src ='data/characters'
-image_files = os.listdir(src)
-image_path = os.path.join(src,random.choice(image_files))
 output_path = 'training'
+image_files = os.listdir(src)
 classes_path = os.path.join(output_path,'classes.txt')
 model_path = os.path.join(output_path,'checkpoint.pt')
 
@@ -43,28 +43,38 @@ def add_padding(image):
         new_image = np.vstack((padding,image,padding))
         return new_image
 
-def predict(img,model,classes):
+def batch_predict(imgs,model,classes):
 
-    img = img.astype(np.uint8)
+    batch_tensors = []
+    hstack_img = np.hstack((cv2.resize(img,(DIM,DIM),interpolation=cv2.INTER_AREA) for img in imgs))
+    cv2.imwrite(os.path.join(dst,'vis.jpg'),hstack_img)
+    
+    for img in imgs:
+        # Read image
+        im_pil = Image.fromarray(img.astype(np.uint8))
+        input = transform(im_pil)
+        input = torch.unsqueeze(input, 0)
+        input = input.to(device)
+        batch_tensors.append(input)
+    
+    # Stack the preprocessed images into a batch tensor
+    batch_tensors = torch.stack(batch_tensors,dim=1)[0]
 
-    # Read image
-    im_pil = Image.fromarray(img)
-    input = transform(im_pil)
-    input = torch.unsqueeze(input, 0)
-    input = input.to(device)
+    # Make predictions for the entire batch
+    with torch.no_grad():
+        output = model(batch_tensors)
 
-    # Predict
-    output = model(input)
+    # Assuming it's a classification model, you can get the predicted classes for each image in the batch
+    # This will give you a tensor of predicted class indices for each image in the batch
+    predicted_classes = torch.argmax(output, dim=1)
 
-    # Post Process
-    output = output.softmax(1)
-    output = output.cpu().detach().numpy() 
-    output = output.ravel()
-    output_argmax = np.argmax(output)
-    output_prob = output[output_argmax]
-    output_class = classes[output_argmax]
+    # Convert the tensor to a Python list
+    predicted_classes = predicted_classes.tolist()
+    
+    characters = [classes[pred_class] for pred_class in predicted_classes]
 
-    return (output_class,output_prob)
+    # Print the list of predicted classes
+    print(characters)
 
 if __name__ == "__main__":
 
@@ -82,20 +92,20 @@ if __name__ == "__main__":
     model = model.to(device)
     model.eval()
 
-    # Read image
-    img = cv2.imread(image_path)
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-    img_padding = add_padding(img)
+    # Choice random number of image for predict
+    no_img = random.choice(NO_IMAGE)
+    batch_imgs = []
+
+    for i in range(no_img):
+
+        image_path = os.path.join(src,random.choice(image_files))
+
+        img = cv2.imread(image_path)
+        img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+        img_padding = add_padding(img)
+        batch_imgs.append(img_padding)
 
     # Predict
-    pred = predict(img_padding,model,classes)
-    print(pred)
-
-    cv2.imwrite(os.path.join(dst,'vis.jpg'),img_padding)
-
-    # Display
-    # cv2.imshow('visualize',img_padding)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-        
+    batch_predict(batch_imgs,model,classes)
+    
     print('Done!')
