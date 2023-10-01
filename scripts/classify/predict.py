@@ -70,7 +70,7 @@ if __name__ == "__main__":
     print(pred)
 
     # Display
-    cv2.imshow('vis',img)
+    cv2.imshow('visualize',img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
         
