@@ -37,4 +37,4 @@ new_image = add_padding(image)
 
 cv2.imwrite(os.path.join(dst,'vis.jpg'),new_image)
 
-print('Done')
+print('Done!')

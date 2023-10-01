@@ -12,6 +12,7 @@ from torchvision import models, transforms
 # Init
 DIM = 224
 THRESH = 0.8
+dst = 'dst'
 src ='data/characters'
 image_files = os.listdir(src)
 image_path = os.path.join(src,random.choice(image_files))
@@ -19,11 +20,32 @@ output_path = 'training'
 classes_path = os.path.join(output_path,'classes.txt')
 model_path = os.path.join(output_path,'checkpoint.pt')
 
+# Create destination folder
+if not os.path.exists(dst):
+    os.mkdir(dst)
+
 transform = transforms.Compose([
     transforms.Resize((DIM,DIM)),
     transforms.ToTensor()])
 
+def add_padding(image):
+    h,w,c = image.shape
+    if w < h:
+        dim = (h - w)//2
+        new_width = dim * 2 + w
+        padding = np.zeros((h,dim,3))
+        new_image = np.hstack((padding,image,padding))
+        return new_image
+    else:
+        dim = (w - h)//2
+        new_height = dim *2 + h
+        padding = np.zeros((dim,w,3))
+        new_image = np.vstack((padding,image,padding))
+        return new_image
+
 def predict(img,model,classes):
+
+    img = img.astype(np.uint8)
 
     # Read image
     im_pil = Image.fromarray(img)
@@ -63,14 +85,17 @@ if __name__ == "__main__":
     # Read image
     img = cv2.imread(image_path)
     img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+    img_padding = add_padding(img)
 
     # Predict
-    pred = predict(img,model,classes)
+    pred = predict(img_padding,model,classes)
     print(pred)
 
+    cv2.imwrite(os.path.join(dst,'vis.jpg'),img_padding)
+
     # Display
-    cv2.imshow('visualize',img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.imshow('visualize',img_padding)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
         
     print('Done!')
