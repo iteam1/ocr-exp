@@ -79,9 +79,14 @@ if __name__ == "__main__":
     print(classes)
 
     # Load model
-    model = torch.load(model_path)
-    model = model.to(device)
-    model.eval()
+    if torch.cuda.is_available():
+        model = torch.load(model_path)
+        model = model.to(device)
+        model.eval()
+    else:
+        model = torch.load(model_path, map_location=torch.device('cpu'))
+        model = model.to(device)
+        model.eval()
 
     # Check labels
     labels = os.listdir(src)
