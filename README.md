@@ -14,6 +14,8 @@ pretained model:
 
 # references
 
+https://github.com/SakuraRiven/CRAFT
+
 [Algorithms for Image Comparison](https://www.baeldung.com/cs/image-comparison-algorithm)
 
 [Comparing images for similarity using siamese networks, Keras, and TensorFlow](https://pyimagesearch.com/2020/12/07/comparing-images-for-similarity-using-siamese-networks-keras-and-tensorflow/)
